@@ -1,4 +1,4 @@
-# Flying Squirrel presents ...
+# Flying Squirrel presents two face
 import pygame
 import sys
 from math import floor, ceil
@@ -132,7 +132,7 @@ class Game:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_p:
                     self.i = 0
-                    self.state = "level_1"
+                    self.state = "pre_level_1"
                 if event.key == pygame.K_q:
                     pygame.quit()  # quit on keystroke q
                     sys.exit()
@@ -156,22 +156,22 @@ class Game:
 
     def prelevel1(self):
         window.fill((0, 0, 0))
-        self.backgroundColor = [0, 100, 0]
-        #level1_title = title_font.render("LEVEL1.", False, white)
-        #window.blit(level1_title, (width // 11, height // 3))
+        prelevel1_title = title_font.render("begin.", False, (207, 198, 184))
+        if 300 < self.i < 600:
+            window.blit(prelevel1_title, (center_w - 125, center_h - 125))
         pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_p:
-                    self.i = 0  # resets global iterator to 0 for use elsewhere
-                    self.state = "level_1"
+                # if event.key == pygame.K_p:
+                # self.i = 0  # resets global iterator to 0 for use elsewhere
+                # self.state = "level_1"
                 if event.key == pygame.K_q:
                     pygame.quit()  # quit on keystroke q
                     sys.exit()
-        if self.i > 500:  # 5 seconds max on transition screen; can be skipped with p
+        if self.i > 900:  # 5 seconds max on transition screen; can be skipped with p
             self.i = 0  # resets global iterator to 0 for use elsewhere
             self.state = "level_1"
         self.i += 1
@@ -189,6 +189,8 @@ class Game:
     def stateManager(self):
         if self.state == "main_menu":
             self.mainMenu()
+        if self.state == "pre_level_1":
+            self.prelevel1()
         if self.state == "level_1":
             self.level1()
 
