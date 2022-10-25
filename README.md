@@ -1,2 +1,2 @@
-# two-face
-Two Face: Horror Topdown 2D game created for the Pygame Halloween 2022 Game Jam
+# Pygame Halloween Jam 2022
+Topdown 2D Horror game by Flying Squirrel
