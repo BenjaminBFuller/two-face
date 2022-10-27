@@ -3,11 +3,12 @@ import pygame
 import sys
 from math import floor, ceil
 from pygame.locals import *
-from layouts import level_1_layout
+from layouts import main_level_layout
 
 pygame.mixer.pre_init()
 pygame.init()
 flags = FULLSCREEN | DOUBLEBUF | SCALED  # fullscreen, double buffering, scaled resolution
+pygame.display.set_caption('two-face.')  # caption of window
 clock = pygame.time.Clock()
 FPS = 120  # limit frame rate to 120 fps
 pygame.mouse.set_visible(False)  # invisible mouse cursor
@@ -19,17 +20,20 @@ center_w = width / 2
 center_h = height / 2
 window = pygame.display.set_mode((width, height), flags)
 
-two_face_img = pygame.image.load("imgs/twoface.png")
-two_face_img = pygame.tranform.scale(two_face_img, (tile, tile))
+two_face_dark_img = pygame.image.load("imgs/twoface_dark.png")
+two_face_dark_img = pygame.transform.scale(two_face_dark_img, ((tile + tile) // 3, (tile + tile) // 3))
+two_face_light_img = pygame.image.load("imgs/twoface_light.png")
+two_face_light_img = pygame.transform.scale(two_face_light_img, ((tile + tile) // 3, (tile + tile) // 3))
+shard_img = pygame.image.load("imgs/shard.png")
+shard_img = pygame.transform.scale(shard_img, (tile//2, tile//2))
+main_level_img = pygame.image.load("imgs/mainlevel.png")
+main_level_img = pygame.transform.scale(main_level_img, (tile * 25, tile * 13))
 menu_bg = pygame.image.load("imgs/twofacemenuBG.png").convert()
 menu_bg = pygame.transform.scale(menu_bg, (width, height))
 menu_bg_width = menu_bg.get_width()
 menu_tiles = ceil(width / menu_bg_width) + 1  # creates tiles for menu screen scroll
 
-#level_1_bg = pygame.image.load...
-
 title_font = pygame.font.Font("fonts/VCR_OSD_MONO.ttf", 125)
-pygame.display.set_caption('two-face.')  # caption of window
 
 pygame.mixer.music.load('audio/dark_tundra.wav')
 pygame.mixer.music.play(-1)  # play song on infinite loop
@@ -45,67 +49,66 @@ def moveCheck(level, row, col):  # checks if space can be moved to
 
 class Game:
     def __init__(self):
-        self.two_face = [1, 1]
+        self.two_face = [4, 2]
         self.moves, self.move_delay = 0, 2
         self.speed = 1 / 32
         self.dir = self.new_dir = 0
-        self.two_face_angle = 0
+        self.two_face_img = two_face_dark_img
         self.two_face_rect = Rect(tile, tile, tile, tile)
         self.stopped = False
         self.state = "main_menu"
+        self.level_bg = main_level_img
+        self.layout = main_level_layout
         self.game_scroll = [0, 0]
         self.wiggle = [0, 0]
         self.menu_scroll = 0
-        # self.level_bg = level_1_bg
         self.i = 0
         self.keyScore = 0
 
-    def twoFaceMovement(self, board):
+    def twoFaceMovement(self, layout):
         if self.moves == self.move_delay:
             self.moves = 0
             if self.new_dir == 0:
-                if moveCheck(board, floor(self.two_face[0] - self.speed), self.two_face[1]) \
+                if moveCheck(layout, floor(self.two_face[0] - self.speed), self.two_face[1]) \
                         and self.two_face[1] % 1.0 == 0:
                     self.two_face[0] -= self.speed
                     self.dir = self.new_dir
-                    self.two_face_angle = 0
                     return
             elif self.new_dir == 1:
-                if moveCheck(board, self.two_face[0], ceil(self.two_face[1] + self.speed)) \
+                if moveCheck(layout, self.two_face[0], ceil(self.two_face[1] + self.speed)) \
                         and self.two_face[0] % 1.0 == 0:
                     self.two_face[1] += self.speed
                     self.dir = self.new_dir
-                    self.two_face_angle = 270
+                    self.two_face_img = two_face_dark_img
                     return
             elif self.new_dir == 2:
-                if moveCheck(board, ceil(self.two_face[0] + self.speed), self.two_face[1]) \
+                if moveCheck(layout, ceil(self.two_face[0] + self.speed), self.two_face[1]) \
                         and self.two_face[1] % 1.0 == 0:
                     self.two_face[0] += self.speed
                     self.dir = self.new_dir
-                    self.two_face_angle = 180
                     return
             elif self.new_dir == 3:
-                if moveCheck(board, self.two_face[0], floor(self.two_face[1] - self.speed)) \
+                if moveCheck(layout, self.two_face[0], floor(self.two_face[1] - self.speed)) \
                         and self.two_face[0] % 1.0 == 0:
                     self.two_face[1] -= self.speed
                     self.dir = self.new_dir
-                    self.two_face_angle = 90
+                    self.two_face_img = two_face_light_img
                     return
 
             if self.dir == 0:  # dir handler
-                if moveCheck(board, floor(self.two_face[0] - self.speed), self.two_face[1]) \
+                if moveCheck(layout, floor(self.two_face[0] - self.speed), self.two_face[1]) \
                         and self.two_face[1] % 1.0 == 0:
                     self.two_face[0] -= self.speed
             elif self.dir == 1:
-                if moveCheck(board, self.two_face[0], ceil(self.two_face[1] + self.speed)) \
+                if moveCheck(layout, self.two_face[0], ceil(self.two_face[1] + self.speed)) \
                         and self.two_face[0] % 1.0 == 0:
                     self.two_face[1] += self.speed
             elif self.dir == 2:
-                if moveCheck(board, ceil(self.two_face[0] + self.speed), self.two_face[1]) \
+                if moveCheck(layout, ceil(self.two_face[0] + self.speed), self.two_face[1]) \
                         and self.two_face[1] % 1.0 == 0:
                     self.two_face[0] += self.speed
             elif self.dir == 3:
-                if moveCheck(board, self.two_face[0], floor(self.two_face[1] - self.speed)) \
+                if moveCheck(layout, self.two_face[0], floor(self.two_face[1] - self.speed)) \
                         and self.two_face[0] % 1.0 == 0:
                     self.two_face[1] -= self.speed
 
@@ -133,7 +136,7 @@ class Game:
                     pygame.quit()  # quit on keystroke q
                     sys.exit()
 
-    def boardCreate(self):
+    def layoutCreate(self):
         # wiggle room: the size of the background level image - the size of the screen
         self.wiggle[0] = self.level_bg.get_size()[0] - width
         self.wiggle[1] = self.level_bg.get_size()[1] - height
@@ -152,23 +155,22 @@ class Game:
         if self.game_scroll[1] > self.wiggle[1]:
             self.game_scroll[1] = self.wiggle[1]
 
-        window.blit(self.levelBG, (0 - self.game_scroll[0], 0 - self.game_scroll[1]))  # blit BG image for current level
-        for i in range(len(self.board)):
-            for j in range(len(self.board[0])):
-                # if self.board[i][j] == 0:  # 0 = background
-                if self.board[i][j] == 1:  # 1 = bug
-                    bugRect = bugImage.get_rect(center=(j * tile + tile // 2, i * tile + tile // 2))
-                    window.blit(bugImage, (bugRect.x - self.game_scroll[0], bugRect.y - self.game_scroll[1]))
-                # if self.board[i][j] == 2:  # 2 = empty, movable spot
-                if self.board[i][j] == 3:  # 3 = rainbow bug
-                    bugRect = bugImage4.get_rect(center=(j * tile + tile // 2, i * tile + tile // 2))
-                    self.shakingImage(bugImage4, bugRect.x - self.game_scroll[0], bugRect.y - self.game_scroll[1])
+        window.blit(self.level_bg, (0 - self.game_scroll[0], 0 - self.game_scroll[1]))  # blit BG image for level
+        for i in range(len(self.layout)):
+            for j in range(len(self.layout[0])):
+                # if self.layout[i][j] == 0:  # 0 = background
+                if self.layout[i][j] == 1:  # 1 = bug
+                    shard_rect = shard_img.get_rect(center=(j * tile + tile // 2, i * tile + tile // 2))
+                    window.blit(shard_img, (shard_rect.x - self.game_scroll[0], shard_rect.y - self.game_scroll[1]))
+                # if self.layout[i][j] == 2:  # 2 = empty, movable spot
+                # if self.layout[i][j] == 3:  # 3 = rainbow bug
+                # bugRect = bugImage4.get_rect(center=(j * tile + tile // 2, i * tile + tile // 2))
+                # self.shakingImage(bugImage4, bugRect.x - self.game_scroll[0], bugRect.y - self.game_scroll[1])
 
-        two_face_rotate = pygame.transform.rotate(two_face_img, self.two_face_angle)
-        self.two_face_rect = two_face_img.get_rect(center=(floor(self.two_face[1] * tile + tile // 2),
-                                                           floor(self.two_face[0] * tile + tile // 2)))
-        window.blit(two_face_rotate, (self.two_face_rect.x - self.game_scroll[0],
-                                   self.two_face_rect.y - self.game_scroll[1]))
+        self.two_face_rect = self.two_face_img.get_rect(center=(floor(self.two_face[1] * tile + tile // 2),
+                                                                floor(self.two_face[0] * tile + tile // 2)))
+        window.blit(self.two_face_img, (self.two_face_rect.x - self.game_scroll[0],
+                                        self.two_face_rect.y - self.game_scroll[1]))
         pygame.display.update()
 
     def mainMenu(self):
@@ -225,8 +227,8 @@ class Game:
 
     def level1(self):
         self.keyGetter()
-        self.twoFaceMovement(level_1_layout)
-        self.boardCreate()
+        self.twoFaceMovement(main_level_layout)
+        self.layoutCreate()
         if self.keyScore == 1:
             self.i = 0
             self.state = "pre-level_2"
