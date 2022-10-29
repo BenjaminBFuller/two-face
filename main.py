@@ -254,6 +254,12 @@ class Game:
         window.blit(menu_title_shadow, (0, 340))
         menu_title = title_font.render("two face.", False, (207, 198, 184))
         window.blit(menu_title, (8, 348))
+        play_title = sub_font.render("- push p -", False, (207, 198, 184))
+        if self.i <= 100:
+            window.blit(play_title, (708, 378))
+        if self.i == 200:
+            self.i = 0
+        self.i += 1
         pygame.display.update()
 
     def prelevel1(self):
