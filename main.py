@@ -326,6 +326,7 @@ class Game:
         self.twoFaceMovement()
         self.layoutCreate()
         if self.note_score == 1:
+            self.i = 0
             self.state = "note"
         if not self.stopped:  # while spacebar is not pressed down, continue to move
             self.moves += 1
@@ -351,7 +352,7 @@ class Game:
         window.fill((0, 0, 0))
         boo_title = title_font.render("welcome.", False, (207, 198, 184))
         lost_title = sub_font.render("you are now anew.", False, (207, 198, 184))
-        quit_title = sub_font.render("you may now leave this realm (q).")
+        quit_title = sub_font.render("you may now revive (q).", False, (207, 198, 184))
         window.blit(boo_title, (500, 250))
         if 300 < self.i:
             window.blit(lost_title, (150, 400))
@@ -365,17 +366,19 @@ class Game:
                 if event.key == pygame.K_q:
                     pygame.quit()  # quit on keystroke q
                     sys.exit()
+        self.i += 1
+        pygame.display.update()
 
     def lose(self):
         window.fill((0, 0, 0))
-        boo_title = title_font.render("BOO!", False, (207, 198, 184))
-        lost_title = sub_font.render("you will always be this way.", False, (207, 198, 184))
-        quit_title = sub_font.render("you may now quit (q).")
-        window.blit(boo_title, (500, 300))
+        boo_title = title_font.render("you will always ", False, (207, 198, 184))
+        lost_title = sub_font.render("be this way.", False, (207, 198, 184))
+        quit_title = sub_font.render("you may now quit (q).", False, (207, 198, 184))
+        window.blit(boo_title, (100, 200))
         if 300 < self.i:
-            window.blit(lost_title, (10, 450))
+            window.blit(lost_title, (300, 350))
         if 600 < self.i:
-            window.blit(quit_title, (150, 600))
+            window.blit(quit_title, (150, 500))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -384,6 +387,8 @@ class Game:
                 if event.key == pygame.K_q:
                     pygame.quit()  # quit on keystroke q
                     sys.exit()
+        self.i += 1
+        pygame.display.update()
 
     def stateManager(self):
         if self.state == "main_menu":
