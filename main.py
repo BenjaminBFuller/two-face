@@ -31,6 +31,8 @@ key_img = pygame.image.load("imgs/key.png").convert_alpha()
 key_img = pygame.transform.scale(key_img, (tile // 1.5, tile // 1.5))
 door_img = pygame.image.load("imgs/door.png").convert_alpha()
 door_img = pygame.transform.scale(door_img, (tile, tile))
+note_pickup_img = pygame.image.load("imgs/note_pickup.png").convert_alpha()
+note_pickup_img = pygame.transform.scale(note_pickup_img, (tile // 1.5, tile // 1.5))
 note_img = pygame.image.load("imgs/note.png").convert_alpha()
 note_img = pygame.transform.scale(note_img, (tile * 6, tile * 10))
 light_img = pygame.image.load("imgs/lightsource.png").convert_alpha()
@@ -213,9 +215,9 @@ class Game:
                 if self.layout[i][j] == 6:  # door
                     door_rect = door_img.get_rect(center=(j * tile + tile // 2, i * tile + tile // 2))
                     window.blit(door_img, (door_rect.x - self.game_scroll[0], door_rect.y - self.game_scroll[1]))
-                # if self.layout[i][j] == 7:  # note
-                    # note_rect = note_img.get_rect(center=(j * tile + tile // 2, i * tile + tile // 2))
-                    # window.blit(shard_img, (note_rect.x - self.game_scroll[0], note_rect.y - self.game_scroll[1]))
+                if self.layout[i][j] == 7:  # note
+                    note_rect = note_pickup_img.get_rect(center=(j * tile + tile // 2, i * tile + tile // 2))
+                    window.blit(note_pickup_img, (note_rect.x - self.game_scroll[0], note_rect.y - self.game_scroll[1]))
 
         self.two_face_rect = self.two_face_img.get_rect(center=(floor(self.two_face[1] * tile + tile // 2),
                                                                 floor(self.two_face[0] * tile + tile // 2)))
@@ -418,5 +420,5 @@ class Game:
 game = Game()
 if __name__ == "__main__":
     while 1:  # game loop
-        # clock.tick(FPS)
+        clock.tick(FPS)
         game.stateManager()
